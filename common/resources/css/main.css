@@ -1,0 +1,48 @@
+﻿#DivPanelMenu .x-panel
+{
+	margin-bottom: 3px;
+	margin-right: 0;
+}
+#DivPanelMenu .x-panel-body
+{
+	border: 0 none;
+}
+#DivPanelMenu .x-panel-body li
+{
+	margin: 3px;
+}
+#DivPanelMenu .x-panel-body li img
+{
+	width: 16px;
+	height: 16px;
+	vertical-align: middle;
+	margin-right: 2px;
+	margin-bottom: 2px;
+}
+#DivPanelMenu .x-panel-body li a
+{
+	text-decoration: none;
+	color: #3764A0;
+}
+#DivPanelMenu .x-panel-body li a:hover
+{
+	text-decoration: underline;
+	color: #15428b;
+}
+#DivPanelMenu .x-panel-body li a.hasItem
+{
+	font-weight: bold;
+}
+#loginCheckcode
+{ 
+    float:left;
+}   
+.x-form-code
+{
+    width:73px;
+    height:20px;
+    vertical-align:middle;
+    cursor:pointer; 
+    float:left; 
+    margin-left:7px;
+} 

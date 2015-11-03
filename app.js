@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var home = require('./routes/home');
 
 var app = express();
 
@@ -25,13 +26,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 
+//app.use(express.static('/images', path.join(__dirname, 'public/images')));
+app.use(express.static(path.join(__dirname, 'common')));
 if(isRelease){
   app.use(express.static(path.join(__dirname, 'public/build')));
 }else {
   app.use(express.static(path.join(__dirname, 'public/src')));
 }
 
-app.use('/', routes);
+app.use('/', home);
 app.use('/users', users);
 
 // catch 404 and forward to error handler

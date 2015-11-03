@@ -1,0 +1,258 @@
+﻿*
+{
+	font-size:12px!important;
+}
+/* 从ext2.2 CSS 复制过来的，用于解决菜单li原点。可能会引起问题 */
+html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, p, blockquote, th, td
+{
+    margin: 0;
+    padding: 0;
+}
+body
+{
+	text-align: center;
+	height: 100%;
+	font-size: 12px;
+	background: none;
+}
+
+
+strong
+{
+	font-weight: bold;
+}
+
+.header
+{
+    background:url(../images/title.jpg) no-repeat;
+    text-align: left;
+    margin: 10px 0;
+    width: 100%;
+    height: 50px;
+
+    
+}
+
+.main
+{
+    /* background-color:#FFFFFF;
+ 
+ */
+ 
+    background:url(../images/background1.jpg) no-repeat;
+    width:100%;
+    height:500px;
+    position:relative;  
+    text-align: center;
+     background-position:50% 0%;
+}
+
+.main-inner
+{
+   
+    position:relative;
+    margin:0 auto;
+    border-radius:15px;
+    /*background-color:#DFE8F6;*/
+    background-position:50% 0%;
+    background-repeat:no-repeat;
+    width:100%;
+    height:100%;
+    padding-top: 2px;
+    
+    overflow:visible;
+    margin-top:5px;
+    text-align: center;
+    clear:both;
+   
+
+    }
+/* .LoginFormBody
+{
+    border:2px solid;
+    -moz-border-radius:15px;
+    text-align: center;
+    
+    margin: -150px 0 0 -375px;
+    color: White;
+    background-color:#FFFFFF;
+    width: 750px;
+    height: 300px;
+    position:relative;
+    left: 50%;
+    top: 50%;
+    
+}   */
+ 
+#ExtNotification
+{
+    padding: 10px;
+    float: left;
+    text-align: left;
+    margin-top:18px;
+    margin-left:15px;
+    width: 20%;
+    height: 80%;
+}
+#ExtLoginForm
+{
+    float: right;
+    text-align: center;    
+    margin-right:30px;
+    margin-top:250px;
+    width: 20%;
+    height: 30%;
+    filter:alpha(opacity=100);
+	-moz-opacity:1.0;
+	-khtml-opacity: 1.0;
+	opacity: 1.0;
+}
+
+.footer
+{
+    width:100%;
+    height:50px;
+    overflow:visible;
+    margin-top:30px;
+    margin:0 auto;
+    color:#848585;
+    
+    } 
+    
+#browser
+{
+	left: 10%;
+	bottom: 10px;
+}          
+
+#copyright
+{
+	
+	right: 10px;
+	bottom: 10px;
+}
+#contact
+{
+	
+	right: 10px;
+	bottom: 10px;
+}
+
+
+ /*   
+
+#DivWrapper
+{
+    position: absolute;
+    top: 65%;
+    left: 65%;
+}
+#DivLoginForm
+{
+    position: absolute;
+    height: 480px;
+    width: 800px;
+    top: -360px;
+    left: -500px;
+    -moz-border-radius:15px;
+    border: 5px solid White;
+    background-color: White;
+    filter:alpha(opacity=80);
+	-moz-opacity:0.8;
+	-khtml-opacity: 0.8;
+	opacity: 0.8;
+}
+.LoginFormHeader
+{
+    background:url(../images/title.jpg) no-repeat;
+    text-align: left;
+    margin: 5px 20px;
+    width: 100%;
+    height: 50px;
+}
+.LoginFormBody
+{
+    border:2px solid;
+    border-radius:15px;
+    -moz-border-radius:15px;
+    text-align: left;
+    color: White;
+    background-color:#424242;
+    margin: 20px;
+    width: 750px;
+    height: 380px;
+}
+.LoginFormMessage
+{
+    padding: 10px;
+    float: left;
+    text-align: left;
+    width: 450px;
+    height: 360px;
+}
+#ExtLoginForm
+{
+    float: left;
+    text-align: center;
+    margin-top: 30px;
+    width: 260px;
+    height: 300px;
+    filter:alpha(opacity=100);
+	-moz-opacity:1.0;
+	-khtml-opacity: 1.0;
+	opacity: 1.0;
+}
+
+#DivAnnouncement
+{
+	font-size: 14px;
+	width: 100%;
+	height: 54px;
+	text-align: center;
+	overflow: hidden;
+	margin-top: 5px;
+	padding: 0px;
+}
+#DivCopyRight
+{
+	font-family: "Courier New";
+	font-size: 12px;
+	position: absolute;
+	right: 15px;
+	bottom: 10px;
+}
+#DivBrowserRecommand
+{
+	font-family: "Courier New";
+	font-size: 12px;
+	position: absolute;
+	left: 15px;
+	bottom: 10px;
+}
+
+*/
+
+.x-my-checkbox
+{
+    width:13px;
+    height:13px;
+    background:url(../../ext/resources/ext-theme-classic/images/form/checkbox.gif) no-repeat;
+    background-position:0 0
+}
+
+.x-my-checkbox-checked
+{
+    width:13px;
+    height:13px;
+    background:url(../../ext/resources/ext-theme-classic/images/form/checkbox.gif) no-repeat;
+    background-position:0 -13px
+}
+.x-btn-center
+{
+    background: url(../../ext/resources/ext-theme-classic/images/btn/btn-sprite.gif) repeat-x 0 -42px;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0 5px;
+    cursor: pointer;
+    white-space: nowrap;
+}
