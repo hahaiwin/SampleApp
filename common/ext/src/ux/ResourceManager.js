@@ -43,8 +43,39 @@ Ext.define('Ext.ux.ResourceManager', {
         //左边树的数据集合
         treeStore: null,
 
+        //根节点是否可见
+        rootVisible: false,
+
         //列表的数据集合
-        gridStore: null
+        gridStore: null,
+
+        //树形列表列配置
+        treeColumns: {
+            items: [{
+                xtype: 'treecolumn',
+                text: "Column A",
+                dataIndex: "text"
+            }],
+            defaults: {
+                flex: 1
+            }
+        },
+        //表格列配置
+        gridColumns: {
+            items: [{
+                text: "Column A",
+                dataIndex: "text"
+            }],
+            defaults: {
+                flex: 1
+            }
+        },
+        //单元格样式
+        cellStyle: {
+            backgroundColor: '#fff'
+        },
+
+        displayField: 'text'
     },
 
     /**
@@ -55,52 +86,69 @@ Ext.define('Ext.ux.ResourceManager', {
 
         //defaults应用于子元素
         me.defaults =  {
-            autoScroll: true
+            autoScroll: true,
+            height: me.height,
+            selType: 'rowmodel',
+            bodyStyle: me.cellStyle
         };
+
+        me.loadGridStore({
+            node: 'root'
+        });
 
         me.items = [{
             xtype: 'treepanel',
             title: 'tree',
             columnWidth: 0.25,
-            height: me.height,
             store: me.treeStore,
             collapsible: true,
+            useArrows: true,
+            displayField: me.displayField,
+            rootVisible: me.rootVisible,
             collapseDirection: 'left',
-            bodyStyle: 'background:#ffc;',
-            animate: false,
-            processEvent: Ext.emptyFn,
+            animate: true,
             viewConfig: {
                 overItemCls: '',
                 getRowClass: me.getRowClass
             },
-            columns: {
-                items: [{
-                    text: "Column A",
-                    dataIndex: "field_A"
-                }],
-                defaults: {
-                    flex: 1
-                }
-            },
-            render: Ext.emptyFn
+            columns: me.treeColumns
         }, {
             xtype: 'gridpanel',
             columnWidth: 0.75,
-            height: me.height,
             collapsible: true,
-            bodyStyle: 'background:#ffc;',
             store: me.gridStore,
             title: 'grid',
-            columns: {
-                items: [{
-                    text: "Column A",
-                    dataIndex: "field_A"
-                }],
-                defaults: {
-                    flex: 1
-                }
-            }
+            columns: me.gridColumns
         }];
         me.callParent(arguments);
+
+        //console.log(me.down('treepanel'));
+        me.down('treepanel').on('selectionchange', function(treePanel, selections){
+            if(selections[0].data.leaf){
+                return;
+            }
+            me.loadGridStore({node: selections[0].data.id});
+        });
+        me.down('gridpanel').on('itemdblclick', function(gridPanel, record){
+            console.log(record);
+            if(record.raw.leaf){
+                return;
+            }
+
+            console.log(record.raw.id);
+            me.loadGridStore({node: record.raw.id});
+        });
+    },
+
+    /**
+     * 加载grid的数据集
+     * @param param
+     */
+    loadGridStore: function(param){
+        var me = this;
+
+        if(me.gridStore){
+            me.gridStore.load({params:param});
+        }
     }
 });

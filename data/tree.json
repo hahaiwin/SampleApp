@@ -1,0 +1,13 @@
+{
+  "children": [
+    {"text": "voyage1",  "children": [
+      {"text": "leg1",  "children":[
+        {"text": "station1", "leaf": true}
+      ]}
+    ]},{"text": "voyage2",  "children": [
+      {"text": "leg2",  "children":[
+        {"text": "station2", "leaf": true}
+      ]}
+    ]}
+  ]
+}

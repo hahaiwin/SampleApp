@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 //var routes = require('./routes/index');
 //var users = require('./routes/users');
 var index = require('./routes/groupManagerIndex');
+var tree = require('./routes/treeStore');
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use(require('less-middleware')(path.join(__dirname, 'public')));
 
 //app.use(express.static('/images', path.join(__dirname, 'public/images')));
 app.use(express.static(path.join(__dirname, 'common')));
+app.use(express.static(path.join(__dirname, 'data')));
 if(isRelease){
   app.use(express.static(path.join(__dirname, 'public/build')));
 }else {
@@ -35,6 +37,7 @@ if(isRelease){
 }
 
 app.use('/', index);
+app.use('/treeStore', tree);
 //app.use('/users', users);
 
 // catch 404 and forward to error handler
