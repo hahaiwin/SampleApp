@@ -14,9 +14,9 @@ Ext.define('Ext.ux.ResourceManager', {
     alias: 'widget.resourcemanager',
 
     /**
-     * 列布局
+     * border布局,上，右，下，左的布局
      */
-    layout: 'column',
+    layout: 'border',
 
     /**
      * 无边框
@@ -53,8 +53,9 @@ Ext.define('Ext.ux.ResourceManager', {
         treeColumns: {
             items: [{
                 xtype: 'treecolumn',
-                text: "Column A",
-                dataIndex: "text"
+                text: '',
+                height: 0,
+                dataIndex: 'text'
             }],
             defaults: {
                 flex: 1
@@ -63,8 +64,9 @@ Ext.define('Ext.ux.ResourceManager', {
         //表格列配置
         gridColumns: {
             items: [{
-                text: "Column A",
-                dataIndex: "text"
+                text: '',
+                height: 0,
+                dataIndex: 'text'
             }],
             defaults: {
                 flex: 1
@@ -97,12 +99,18 @@ Ext.define('Ext.ux.ResourceManager', {
         });
 
         me.items = [{
+            xtype: 'panel',
+            region: 'north',
+            height: 40
+        },{
             xtype: 'treepanel',
             title: 'tree',
-            columnWidth: 0.25,
+            region: 'west',
+            width: 200,
             store: me.treeStore,
             collapsible: true,
             useArrows: true,
+            resizable: true,
             displayField: me.displayField,
             rootVisible: me.rootVisible,
             collapseDirection: 'left',
@@ -111,32 +119,42 @@ Ext.define('Ext.ux.ResourceManager', {
                 overItemCls: '',
                 getRowClass: me.getRowClass
             },
-            columns: me.treeColumns
+            columns: me.treeColumns,
+            tbar: [
+                {xtype: 'button', text: '新建'}
+            ]
         }, {
             xtype: 'gridpanel',
-            columnWidth: 0.75,
-            collapsible: true,
+            region: 'center',
+            rowLines: false,
+            layout: 'fit',
+            collapsible: false,
             store: me.gridStore,
             title: 'grid',
-            columns: me.gridColumns
+            columns: me.gridColumns,
+            tbar: [
+                {xtype: 'button', text: '+'}
+            ]
         }];
         me.callParent(arguments);
 
-        //console.log(me.down('treepanel'));
-        me.down('treepanel').on('selectionchange', function(treePanel, selections){
-            if(selections[0].data.leaf){
+        me.getTreePanel().on('selectionchange', function(treePanel, selections){
+            /*if(selections[0].data.leaf){
                 return;
-            }
+            }*/
             me.loadGridStore({node: selections[0].data.id});
         });
-        me.down('gridpanel').on('itemdblclick', function(gridPanel, record){
-            console.log(record);
+        me.getGridPanel().on('itemdblclick', function(gridPanel, record){
+            //console.log(record);
             if(record.raw.leaf){
                 return;
             }
-
-            console.log(record.raw.id);
+            //console.log(record.raw.id);
             me.loadGridStore({node: record.raw.id});
+
+            //与树形列表联动
+            me.selectTreeNode(record.raw.id, record.raw.parentId);
+
         });
     },
 
@@ -150,5 +168,54 @@ Ext.define('Ext.ux.ResourceManager', {
         if(me.gridStore){
             me.gridStore.load({params:param});
         }
+    },
+
+    /**
+     * 获取树形列表组件
+     * @returns {*}
+     */
+    getTreePanel: function(){
+        var me = this;
+        return me.down('treepanel');
+    },
+
+    /**
+     * 获取列表组件
+     * @returns {*}
+     */
+    getGridPanel: function(){
+        var me = this;
+        return me.down('gridpanel');
+    },
+
+    /**
+     * 选中树形列表中的节点
+     * @param nodeId
+     * @param parentId
+     */
+    selectTreeNode: function(nodeId, parentId){
+        var me = this,
+            tree = me.getTreePanel(),
+            node = me.treeStore.getNodeById(nodeId),
+            parent;
+
+        if(node){
+            tree.selectPath(node.getPath());
+            return;
+        }
+        console.log(parentId);
+        //节点还没有加载进来则加载该节点再选中
+        if(!parentId || !me.treeStore.getNodeById(parentId)){
+            console.error('lost parent! can not load node..');
+            return;
+        }
+
+        parent = me.treeStore.getNodeById(parentId);
+
+        tree.expandNode(parent, false, function(){
+            var node = parent.findChild('id', nodeId);
+            tree.selectPath(node.getPath());
+        });
+
     }
 });

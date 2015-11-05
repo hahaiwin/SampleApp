@@ -1,1 +1,1 @@
-[{"id": "station2", "text": "station2", "leaf": true}]
+[{"id": "station2", "text": "station2", "leaf": false,"expandable": false, "parentId": "leg2"},{"id": "station3", "text": "station3", "leaf": false,"expandable": false, "parentId": "leg2"}]

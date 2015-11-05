@@ -42,7 +42,7 @@ Ext.application({
                         width: 800,
                         treeStore: treeStore,
                         gridStore: gridStore,
-                        height: 800,
+                        height: 500,
                         resizable: true
                     }]
         });

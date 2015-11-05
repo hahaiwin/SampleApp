@@ -1,2 +1,2 @@
-[{"id": "voyage1", "text": "voyage1", "leaf": false},
-{"id": "voyage2", "text": "voyage2", "leaf": false}]
+[{"id": "voyage1", "text": "voyage1", "leaf": false, "parentId": "root"},
+{"id": "voyage2", "text": "voyage2", "leaf": false, "parentId": "root"}]
