@@ -27,8 +27,8 @@ Ext.define('Ext.ux.ResourceManager', {
      * 依赖树形列表和表格
      */
     requires:[
-        'Ext.tree.Panel',
-        'Ext.grid.Panel'
+        'Ext.tree.Panel'
+        /*'Ext.grid.Panel'*/
     ],
 
     /**
@@ -41,16 +41,16 @@ Ext.define('Ext.ux.ResourceManager', {
      */
     config:{
         //左边树的数据集合
-        treeStore: null,
+        leftTreeStore: null,
 
         //根节点是否可见
         rootVisible: false,
 
         //列表的数据集合
-        gridStore: null,
+        rightTreeStore: null,
 
         //树形列表列配置
-        treeColumns: {
+        leftTreeColumns: {
             items: [{
                 xtype: 'treecolumn',
                 text: '',
@@ -62,8 +62,9 @@ Ext.define('Ext.ux.ResourceManager', {
             }
         },
         //表格列配置
-        gridColumns: {
+        rightTreeColumns: {
             items: [{
+                xtype: 'treecolumn',
                 text: '',
                 height: 0,
                 dataIndex: 'text'
@@ -131,10 +132,11 @@ Ext.define('Ext.ux.ResourceManager', {
 
         },{
             xtype: 'treepanel',
+            itemId: 'left152752',
             title: 'tree',
             region: 'west',
             width: 200,
-            store: me.treeStore,
+            store: me.leftTreeStore,
             collapsible: true,
             useArrows: true,
             resizable: {
@@ -148,38 +150,42 @@ Ext.define('Ext.ux.ResourceManager', {
                 overItemCls: '',
                 getRowClass: me.getRowClass
             },
-            columns: me.treeColumns,
+            columns: me.leftTreeColumns,
             tbar: [
                 {xtype: 'button', text: '新建'}
             ]
         }, {
-            xtype: 'gridpanel',
+            xtype: 'treepanel',
+            itemId: 'right152752',
             region: 'center',
             rowLines: false,
+            useArrows: true,
             layout: 'fit',
             collapsible: false,
-            store: me.gridStore,
+            displayField: me.displayField,
+            rootVisible: me.rootVisible,
+            store: me.rightTreeStore,
             title: 'grid',
-            columns: me.gridColumns,
+            columns: me.rightTreeColumns,
             tbar: [
                 {xtype: 'button', text: '+'}
             ]
         }];
         me.callParent(arguments);
 
-        me.loadGridStore({
-            node: me.treeStore.defaultRoodId
-        });
+        /*me.loadRightStore({
+            node: me.leftTreeStore.defaultRoodId
+        });*/
 
-        me.addPath(me.getLoadedNodePath(me.treeStore.defaultRoodId, me.displayField));
+        me.addPath(me.getLoadedNodePath(me.leftTreeStore.defaultRoodId, me.displayField));
 
         me.bnBtnController();
 
         me.getTreePanel().on('selectionchange', function(selModel, selections){
             var path,
-                id = selections.length === 0 ? me.treeStore.defaultRoodId : selections[0].data[me.id];
+                id = selections.length === 0 ? me.leftTreeStore.defaultRoodId : selections[0].data[me.id];
 
-            me.loadGridStore({node: id});
+            me.loadRightStore({node: id});
 
             path = me.getLoadedNodePath(id, me.displayField);
 
@@ -194,11 +200,10 @@ Ext.define('Ext.ux.ResourceManager', {
             console.log(me.paths);
         });
         me.getGridPanel().on('itemdblclick', function(gridPanel, record){
-            if(record.raw.leaf){
+            if(record.raw.expandable){
                 return;
             }
-            me.loadGridStore({node: record.raw[me.id]});
-            //与树形列表联动
+            //与树形列表联动, 触发树形列表的selectchange事件
             me.selectTreeNode(record.raw[me.id], record.raw.parentId);
 
         });
@@ -216,11 +221,11 @@ Ext.define('Ext.ux.ResourceManager', {
      * 加载grid的数据集
      * @param param
      */
-    loadGridStore: function(param){
+    loadRightStore: function(param){
         var me = this;
 
-        if(me.gridStore){
-            me.gridStore.load({params:param});
+        if(me.rightTreeStore){
+            me.rightTreeStore.load({params: param});
         }
     },
 
@@ -230,7 +235,7 @@ Ext.define('Ext.ux.ResourceManager', {
      */
     getTreePanel: function(){
         var me = this;
-        return me.down('treepanel');
+        return me.down('#left152752');
     },
 
     /**
@@ -239,7 +244,7 @@ Ext.define('Ext.ux.ResourceManager', {
      */
     getGridPanel: function(){
         var me = this;
-        return me.down('gridpanel');
+        return me.down('#right152752');
     },
 
     /**
@@ -277,7 +282,7 @@ Ext.define('Ext.ux.ResourceManager', {
      */
     getLoadedNodePath: function(nodeId, field){
         var me = this;
-        return me.treeStore.getNodeById(nodeId).getPath(field);
+        return me.leftTreeStore.getNodeById(nodeId).getPath(field);
     },
 
     /**
@@ -340,7 +345,7 @@ Ext.define('Ext.ux.ResourceManager', {
     selectTreeNode: function(nodeId, parentId){
         var me = this,
             tree = me.getTreePanel(),
-            node = me.treeStore.getNodeById(nodeId),
+            node = me.leftTreeStore.getNodeById(nodeId),
             parent;
 
         if(node){
@@ -349,12 +354,12 @@ Ext.define('Ext.ux.ResourceManager', {
         }
 
         //节点还没有加载进来则加载该节点再选中
-        if(!parentId || !me.treeStore.getNodeById(parentId)){
+        if(!parentId || !me.leftTreeStore.getNodeById(parentId)){
             console.error('lost parent! can not load node..');
             return;
         }
 
-        parent = me.treeStore.getNodeById(parentId);
+        parent = me.leftTreeStore.getNodeById(parentId);
 
         tree.expandNode(parent, false, function(){
             var node = parent.findChild(me.id, nodeId);
@@ -367,7 +372,7 @@ Ext.define('Ext.ux.ResourceManager', {
      */
     backSelect: function(){
         var me = this,
-            root = me.treeStore.getRootNode().getPath(me.displayField);
+            root = me.leftTreeStore.getRootNode().getPath(me.displayField);
 
         me.needRemember = false;
 
@@ -387,7 +392,7 @@ Ext.define('Ext.ux.ResourceManager', {
      */
     nextSelect: function(){
         var me = this,
-            root = me.treeStore.getRootNode().getPath(me.displayField);
+            root = me.leftTreeStore.getRootNode().getPath(me.displayField);
 
         me.needRemember = false;
 

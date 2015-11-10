@@ -11,19 +11,20 @@ Ext.application({
             ],
             proxy:{
                 type: 'ajax',
-                url: '/treeStore',
+                url: '/leftTreeStore',
                 reader: 'json',
                 autoLoad: true
             }
         });
         Ext.define('SampleApp.store.GridStore',{
-            extend: 'Ext.data.Store',
+            extend: 'Ext.data.TreeStore',
+            defaultRoodId: 'root',
             fields: [
                 {name: 'text', type: 'string'}
             ],
             proxy:{
                 type: 'ajax',
-                url: '/treeStore',
+                url: '/rightTreeStore',
                 reader: 'json'
             }
         });
@@ -40,8 +41,8 @@ Ext.application({
                     items: [{
                         xtype: 'resourcemanager',
                         width: 800,
-                        treeStore: treeStore,
-                        gridStore: gridStore,
+                        leftTreeStore: treeStore,
+                        rightTreeStore: gridStore,
                         height: 500,
                         resizable: true
                     }]
