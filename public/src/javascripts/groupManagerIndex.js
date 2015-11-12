@@ -12,8 +12,7 @@ Ext.application({
             proxy:{
                 type: 'ajax',
                 url: '/leftTreeStore',
-                reader: 'json',
-                autoLoad: true
+                reader: 'json'
             }
         });
         Ext.define('SampleApp.store.GridStore',{

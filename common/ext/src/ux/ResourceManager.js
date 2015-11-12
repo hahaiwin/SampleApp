@@ -127,7 +127,14 @@ Ext.define('Ext.ux.ResourceManager', {
                 margin: '2 0 0 5',
                 itemId: 'pathipt152752',
                 height: 23,
-                width: me.width - 100
+                width: me.width - 150
+            },{
+                xtype: 'button',
+                margin: '3 0 0 5',
+                itemId: 'refresh152752',
+                text: '刷新',
+                width: 40,
+                textAlign: 'center'
             }]
 
         },{
@@ -173,10 +180,6 @@ Ext.define('Ext.ux.ResourceManager', {
         }];
         me.callParent(arguments);
 
-        /*me.loadRightStore({
-            node: me.leftTreeStore.defaultRoodId
-        });*/
-
         me.addPath(me.getLoadedNodePath(me.leftTreeStore.defaultRoodId, me.displayField));
 
         me.bnBtnController();
@@ -192,20 +195,17 @@ Ext.define('Ext.ux.ResourceManager', {
             if(me.needRemember) {
                 me.addPath(path);
             }
-
+            console.info('has trigger select');
             me.getPathIpt().setValue(path);
 
             me.bnBtnController();
-
-            console.log(me.paths);
         });
         me.getGridPanel().on('itemdblclick', function(gridPanel, record){
             if(record.raw.expandable){
                 return;
             }
             //与树形列表联动, 触发树形列表的selectchange事件
-            me.selectTreeNode(record.raw[me.id], record.raw.parentId);
-
+            me.selectTreeNodeById(record.raw[me.id], record.raw.parentId);
         });
         me.getBackBtn().on('click', function(btn, e){
             me.backSelect();
@@ -215,6 +215,11 @@ Ext.define('Ext.ux.ResourceManager', {
             me.nextSelect();
             me.bnBtnController();
         });
+        me.getRefreshBtn().on('click', function(btn, e){
+            me.refresh();
+        });
+
+        //me.selectNodeByTextPath();
     },
 
     /**
@@ -225,6 +230,7 @@ Ext.define('Ext.ux.ResourceManager', {
         var me = this;
 
         if(me.rightTreeStore){
+            //me.rightTreeStore.removeAll();
             me.rightTreeStore.load({params: param});
         }
     },
@@ -266,6 +272,15 @@ Ext.define('Ext.ux.ResourceManager', {
     },
 
     /**
+     * 获取刷新按钮
+     * @returns {*}
+     */
+    getRefreshBtn: function(){
+        var me = this;
+        return me.down('#refresh152752');
+    },
+
+    /**
      * 获取路径展示框
      * @returns {*}
      */
@@ -286,19 +301,31 @@ Ext.define('Ext.ux.ResourceManager', {
     },
 
     /**
+     * 刷新界面
+     */
+    refresh: function(){
+        var me = this;
+        me.paths.length = 0;
+        me.paths.focusIndex = 1;
+        me.leftTreeStore.load();
+    },
+
+    /**
      * 添加路径到记忆数组里
      * @param path
      */
     addPath: function(path){
         var me = this,
-            i;
+            i, diff;
 
         if(me.paths.length === 0){
             me.paths.focusIndex =  me.paths.push(path);
             return;
         }
 
-        for(i = 0; i < me.paths.length - me.paths.focusIndex; i++){
+        diff = me.paths.length -  me.paths.focusIndex;
+
+        for(i = 0; i < diff; i++){
             me.paths.pop();
         }
 
@@ -342,7 +369,7 @@ Ext.define('Ext.ux.ResourceManager', {
      * @param nodeId
      * @param parentId
      */
-    selectTreeNode: function(nodeId, parentId){
+    selectTreeNodeById: function(nodeId, parentId){
         var me = this,
             tree = me.getTreePanel(),
             node = me.leftTreeStore.getNodeById(nodeId),
@@ -367,6 +394,14 @@ Ext.define('Ext.ux.ResourceManager', {
         });
     },
 
+    selectNodeByTextPath: function(path){
+        var me = this,
+            tree = me.getTreePanel();
+
+        tree.selectPath(path, me.displayField, '/', function(bSuccess, oLastNode){
+
+        });
+    },
     /**
      * 回退到上一次选中状态
      */
@@ -406,5 +441,4 @@ Ext.define('Ext.ux.ResourceManager', {
 
         me.needRemember = true;
     }
-
 });
