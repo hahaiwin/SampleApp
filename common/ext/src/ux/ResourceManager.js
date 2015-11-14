@@ -82,7 +82,9 @@ Ext.define('Ext.ux.ResourceManager', {
 
         id: 'id',
 
-        allowMemoryLength: 10
+        allowMemoryLength: 10,
+
+        level: 3
     },
 
     /**
@@ -125,6 +127,7 @@ Ext.define('Ext.ux.ResourceManager', {
             },{
                 xtype: 'textfield',
                 margin: '2 0 0 5',
+                enableKeyEvents: true,
                 itemId: 'pathipt152752',
                 height: 23,
                 width: me.width - 150
@@ -177,12 +180,27 @@ Ext.define('Ext.ux.ResourceManager', {
             tbar: [
                 {xtype: 'button', text: '+'}
             ]
+        }, {
+            xtype: 'panel',
+            region: 'south',
+            layout: 'column',
+            height: 25,
+            items:[{
+                xtype: 'panel',
+                itemId: 'errerdisplaypanel152752',
+                height: 20,
+                border: false,
+                width: me.width - 150,
+                margin: '1 0 0 0',
+                headerPosition: 'left'
+            }]
         }];
         me.callParent(arguments);
 
         me.addPath(me.getLoadedNodePath(me.leftTreeStore.defaultRoodId, me.displayField));
-
         me.bnBtnController();
+
+        me.getPathIpt().setValue(me.getLoadedNodePath(me.leftTreeStore.defaultRoodId, me.displayField));
 
         me.getTreePanel().on('selectionchange', function(selModel, selections){
             var path,
@@ -196,6 +214,7 @@ Ext.define('Ext.ux.ResourceManager', {
                 me.addPath(path);
             }
             console.info('has trigger select');
+            console.log(me.paths);
             me.getPathIpt().setValue(path);
 
             me.bnBtnController();
@@ -218,8 +237,13 @@ Ext.define('Ext.ux.ResourceManager', {
         me.getRefreshBtn().on('click', function(btn, e){
             me.refresh();
         });
-
-        //me.selectNodeByTextPath();
+        me.getPathIpt().on('keypress', function(ipt, e){
+            var v;
+            if(e.button === 12) {
+                v = ipt.getValue();
+                me.selectNodeByTextPath(v);
+            }
+        });
     },
 
     /**
@@ -230,7 +254,6 @@ Ext.define('Ext.ux.ResourceManager', {
         var me = this;
 
         if(me.rightTreeStore){
-            //me.rightTreeStore.removeAll();
             me.rightTreeStore.load({params: param});
         }
     },
@@ -281,6 +304,33 @@ Ext.define('Ext.ux.ResourceManager', {
     },
 
     /**
+     * 获取展示错误信息的区域
+     * @returns {*}
+     */
+    getErrorDisplayPanel: function(){
+        var me = this;
+        return me.down('#errerdisplaypanel152752');
+    },
+
+    /**
+     * 设置出错信息
+     * @param info
+     */
+    setErrorMassage: function(info){
+        var me = this,
+            comp = Ext.create('Ext.Component', {
+                html: info,
+                margin: '2 0 0 5',
+                height: 20,
+                style: {
+                    color: 'red'
+                }
+            });
+        me.getErrorDisplayPanel().removeAll();
+        me.getErrorDisplayPanel().add(comp);
+    },
+
+    /**
      * 获取路径展示框
      * @returns {*}
      */
@@ -306,8 +356,12 @@ Ext.define('Ext.ux.ResourceManager', {
     refresh: function(){
         var me = this;
         me.paths.length = 0;
-        me.paths.focusIndex = 1;
+        me.needRemember = false;
+        me.addPath(me.getLoadedNodePath(me.leftTreeStore.defaultRoodId, me.displayField));
+        me.getPathIpt().setValue(me.getLoadedNodePath(me.leftTreeStore.defaultRoodId, me.displayField));
         me.leftTreeStore.load();
+        me.needRemember = true;
+        console.log(me.paths);
     },
 
     /**
@@ -382,7 +436,8 @@ Ext.define('Ext.ux.ResourceManager', {
 
         //节点还没有加载进来则加载该节点再选中
         if(!parentId || !me.leftTreeStore.getNodeById(parentId)){
-            console.error('lost parent! can not load node..');
+            console.warn('lost parent! can not load node..');
+            me.setErrorMassage('lost parent! can not load node..');
             return;
         }
 
@@ -394,14 +449,61 @@ Ext.define('Ext.ux.ResourceManager', {
         });
     },
 
+    /**
+     * 通过路径选择一个节点
+     * @param path
+     */
     selectNodeByTextPath: function(path){
         var me = this,
-            tree = me.getTreePanel();
+            leftTree = me.getTreePanel(),
+            rightTree = me.getGridPanel(),
+            paths = path.split('/'),
+            leftPaths = paths.slice(0, me.level + 2),
+            rightPaths = paths.slice(me.level + 2, paths.length),
+            leftPath = leftPaths.join('/'),
+            rightPath = '/Root/' + rightPaths.join('/'),
+            selectRight = function(){
+                if(me.rightTreeStore.isLoading()){
+                    setTimeout(selectRight, 1000);
+                }else if(rightPaths.length > 0){
+                    rightTree.selectPath(rightPath, me.displayField, '/', function (bSuccess) {
+                        console.log(rightPaths);
+                        if (!bSuccess) {
+                            console.warn('not find ' + path);
+                            me.setErrorMassage('not find ' + path + '!');
+                        } else {
+                            me.setErrorMassage(' ');
+                        }
+                    });
+                }
+            };
+        //console.log(leftPath);
+        //console.log(rightPath);
 
-        tree.selectPath(path, me.displayField, '/', function(bSuccess, oLastNode){
+        if(!path || path === '/Root'){
+            me.refresh();
+            me.setErrorMassage(' ');
+            return;
+        }
 
+        leftTree.selectPath(leftPath, me.displayField, '/', function(bSuccess, oLastNode){
+            console.log('aaaa');
+            if(!bSuccess){
+                console.warn('not find ' + path);
+                me.setErrorMassage('not find ' + path + '!');
+                if(oLastNode) {
+                    leftTree.selectPath(oLastNode.getPath());
+                }
+            }else{
+                if(me.rightTreeStore.isLoading()){
+                    setTimeout(selectRight, 1);
+                }else{
+                    selectRight();
+                }
+            }
         });
     },
+
     /**
      * 回退到上一次选中状态
      */
@@ -416,7 +518,7 @@ Ext.define('Ext.ux.ResourceManager', {
         if(me.paths[me.paths.focusIndex - 1] === root ){
             me.getTreePanel().getSelectionModel().deselectAll();
         }else{
-            me.getTreePanel().selectPath(me.paths[me.paths.focusIndex - 1], me.displayField);
+            me.selectNodeByTextPath(me.paths[me.paths.focusIndex - 1]);
         }
 
         me.needRemember = true;
@@ -436,7 +538,7 @@ Ext.define('Ext.ux.ResourceManager', {
         if(me.paths[me.paths.focusIndex - 1] === root ){
             me.getTreePanel().getSelectionModel().deselectAll();
         }else{
-            me.getTreePanel().selectPath(me.paths[me.paths.focusIndex - 1], me.displayField);
+            me.selectNodeByTextPath(me.paths[me.paths.focusIndex - 1]);
         }
 
         me.needRemember = true;

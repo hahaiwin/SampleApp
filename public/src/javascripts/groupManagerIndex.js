@@ -31,7 +31,7 @@ Ext.application({
         var gridStore = Ext.create('SampleApp.store.GridStore');
         //gridStore.load();
         Ext.create('Ext.panel.Panel',{
-                    height: 500,
+                   // height: 500,
                     border: true,
                     width: 800,
                     renderTo: Ext.getBody(),
